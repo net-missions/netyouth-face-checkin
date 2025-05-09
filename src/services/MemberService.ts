@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import faceDetectionService from "./FaceDetectionService";
 
@@ -9,6 +8,8 @@ export interface Member {
   face_encoding?: any;
   status?: string;
   photo_url?: string;
+  created_at?: string;  // Add created_at property to match the database schema
+  updated_at?: string;  // Add updated_at for completeness
 }
 
 class MemberService {
