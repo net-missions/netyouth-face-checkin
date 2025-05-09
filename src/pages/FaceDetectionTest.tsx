@@ -1,13 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FaceDetection from '@/components/FaceDetection';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const FaceDetectionTest = () => {
+  const { toast } = useToast();
+  const [faceData, setFaceData] = useState<any>(null);
+
   const handleFaceDetected = (face: any) => {
     console.log('Face detected:', face);
+    setFaceData(face);
+
+    // Show toast when we detect a face with high confidence
+    if (face.box.score > 0.9) {
+      toast({
+        title: "Face Detected",
+        description: `Confidence: ${(face.box.score * 100).toFixed(1)}%. Position: (${face.box.xMin.toFixed(0)}, ${face.box.yMin.toFixed(0)})`,
+      });
+    }
   };
 
   return (
@@ -38,7 +51,16 @@ const FaceDetectionTest = () => {
         />
         
         <div className="mt-8">
-          <p className="text-sm text-slate-500">
+          {faceData && (
+            <div className="bg-slate-100 p-4 rounded-md">
+              <h2 className="font-semibold mb-2">Face Detection Data</h2>
+              <pre className="bg-slate-200 p-2 rounded text-xs overflow-auto">
+                {JSON.stringify(faceData, null, 2)}
+              </pre>
+            </div>
+          )}
+          
+          <p className="text-sm text-slate-500 mt-4">
             Note: This is just a test page to verify that face detection is working properly. 
             The actual attendance system will include identification of registered members.
           </p>

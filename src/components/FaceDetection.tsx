@@ -16,6 +16,7 @@ const FaceDetection = ({ onFaceDetected, width = 640, height = 480 }: FaceDetect
   const [isInitialized, setIsInitialized] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectionMessage, setDetectionMessage] = useState("Initialize face detection");
+  const [detectedFaces, setDetectedFaces] = useState<any[]>([]);
   
   // Initialize the face detection model
   const initFaceDetection = async () => {
@@ -59,6 +60,7 @@ const FaceDetection = ({ onFaceDetected, width = 640, height = 480 }: FaceDetect
       videoRef.current.srcObject = null;
       setIsDetecting(false);
       setDetectionMessage("Face detection stopped. Click 'Start Camera' to begin again.");
+      setDetectedFaces([]);
     }
   };
   
@@ -68,6 +70,7 @@ const FaceDetection = ({ onFaceDetected, width = 640, height = 480 }: FaceDetect
     
     try {
       const faces = await faceDetectionService.detectFaces(videoRef.current);
+      setDetectedFaces(faces);
       
       // Draw the results on canvas
       const ctx = canvasRef.current.getContext('2d');
@@ -84,7 +87,7 @@ const FaceDetection = ({ onFaceDetected, width = 640, height = 480 }: FaceDetect
           ctx.lineWidth = 2;
           ctx.strokeRect(box.xMin, box.yMin, box.width, box.height);
           
-          // Call the callback if provided
+          // Call the callback if provided and we found a face
           if (onFaceDetected) {
             onFaceDetected(face);
           }
@@ -166,6 +169,11 @@ const FaceDetection = ({ onFaceDetected, width = 640, height = 480 }: FaceDetect
           
           <div className="text-center">
             <p className="text-sm text-gray-500">{detectionMessage}</p>
+            {detectedFaces.length > 0 && (
+              <p className="text-sm text-green-500 font-medium">
+                Face detected! Confidence: {(detectedFaces[0].box.score * 100).toFixed(1)}%
+              </p>
+            )}
           </div>
         </div>
       </CardContent>
