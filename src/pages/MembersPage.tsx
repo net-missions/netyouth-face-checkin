@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, UserPlus } from 'lucide-react';
-import { useToast } from "@/components/ui/use-toast";
+import { User, UserPlus } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import memberService, { Member } from "@/services/MemberService";
 import MemberRegistration from '@/components/MemberRegistration';
+import FaceRecognitionNav from '@/components/FaceRecognitionNav';
 
 const MembersPage = () => {
   const { toast } = useToast();
@@ -55,17 +55,7 @@ const MembersPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-slate-900 text-white py-6">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="text-white">
-                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <FaceRecognitionNav />
       
       <div className="container mx-auto px-4 py-8">
         {showRegistrationForm ? (
@@ -73,7 +63,7 @@ const MembersPage = () => {
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold">Add New Member</h1>
               <Button variant="outline" onClick={handleBackToListClick}>
-                <ArrowLeft className="h-4 w-4 mr-2" /> Back to Members
+                Back to Members
               </Button>
             </div>
             <MemberRegistration />
@@ -119,9 +109,22 @@ const MembersPage = () => {
                         <TableRow key={member.id}>
                           <TableCell className="font-medium">{member.name}</TableCell>
                           <TableCell>{member.email || '-'}</TableCell>
-                          <TableCell>{member.face_encoding ? 'Registered' : 'Not registered'}</TableCell>
+                          <TableCell>
+                            {member.face_encoding ? 
+                              <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                                Registered
+                              </span> : 
+                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                                Not registered
+                              </span>
+                            }
+                          </TableCell>
                           <TableCell>{member.created_at ? formatDate(member.created_at) : '-'}</TableCell>
-                          <TableCell>{member.status || 'active'}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 ${member.status === 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'} rounded-full text-xs font-medium`}>
+                              {member.status || 'active'}
+                            </span>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

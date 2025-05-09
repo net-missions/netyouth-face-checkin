@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import faceDetectionService from "./FaceDetectionService";
 
@@ -120,6 +121,34 @@ class MemberService {
       .lte('check_in_time', endOfDay);
     
     return { data: count || 0, error };
+  }
+
+  // New method to get recognition metrics
+  async getRecognitionMetrics(): Promise<{ data: any; error: any }> {
+    try {
+      // Get total members
+      const { data: members, error: membersError } = await this.getAllMembers();
+      if (membersError) throw new Error(membersError.message);
+      
+      // Get members with face encoding
+      const membersWithFaces = members.filter(m => m.face_encoding);
+      
+      // Get today's attendance
+      const { data: todayCount, error: countError } = await this.getDailyAttendanceCount();
+      if (countError) throw new Error(countError.message);
+      
+      // Calculate metrics
+      const metrics = {
+        totalMembers: members.length,
+        registeredFaces: membersWithFaces.length,
+        registrationRate: members.length > 0 ? membersWithFaces.length / members.length : 0,
+        todayAttendance: todayCount
+      };
+      
+      return { data: metrics, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
   }
 }
 

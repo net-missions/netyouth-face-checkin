@@ -42,6 +42,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string | null
+          face_embeddings: Json | null
           face_encoding: Json | null
           id: string
           name: string
@@ -51,6 +52,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email?: string | null
+          face_embeddings?: Json | null
           face_encoding?: Json | null
           id?: string
           name: string
@@ -60,6 +62,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string | null
+          face_embeddings?: Json | null
           face_encoding?: Json | null
           id?: string
           name?: string
